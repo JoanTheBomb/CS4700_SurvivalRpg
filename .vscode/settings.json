@@ -66,5 +66,5 @@
     "explorer.fileNesting.patterns": {
         "*.sln": "*.csproj"
     },
-    "dotnet.defaultSolution": "CS4700_SurvivalRpg.sln"
+    "dotnet.defaultSolution": "CS4700_SurvivalRPG.sln"
 }

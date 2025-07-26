@@ -6,7 +6,12 @@ using TMPro;
  
 public class SelectionManager : MonoBehaviour
 {
- 
+
+
+    public static SelectionManager Instance { get; set; }
+
+
+    public bool onTarget = false;
     public GameObject interaction_Info_UI;
     TMP_Text interaction_text;
  
@@ -14,7 +19,25 @@ public class SelectionManager : MonoBehaviour
     {
         interaction_text = interaction_Info_UI.GetComponent<TMP_Text>();
     }
- 
+
+
+
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            Instance = this;
+        }
+    }
+
+
+
+
     void Update()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -22,17 +45,28 @@ public class SelectionManager : MonoBehaviour
         if (Physics.Raycast(ray, out hit))
         {
             var selectionTransform = hit.transform;
- 
-            if (selectionTransform.GetComponent<InteractableObject>())
+
+            InteractableObject interactable = selectionTransform.GetComponent<InteractableObject>();
+
+            if (interactable && interactable.playerInRange)
             {
-                interaction_text.text = selectionTransform.GetComponent<InteractableObject>().GetItemName();
+
+                onTarget = true;
+
+                interaction_text.text = interactable.GetItemName();
                 interaction_Info_UI.SetActive(true);
             }
-            else 
-            { 
+            else // if there is a hit, but no Interactable Script
+            {
+                onTarget = false;
                 interaction_Info_UI.SetActive(false);
             }
- 
+
+        }
+        else // if there is no hit on any object
+        {
+            onTarget = false;
+            interaction_Info_UI.SetActive(false);
         }
     }
 }
