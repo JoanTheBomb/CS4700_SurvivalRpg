@@ -18,20 +18,19 @@ public class InteractableObject : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.F) && playerInRange && SelectionManager.Instance.onTarget)
         {
-            
-            Debug.Log("Item added to inventory");
 
-            Destroy(gameObject); // Example action: destroy the object after interaction
+            // Check if the inventory is not full before adding the item
+            if (!InventorySystem.Instance.CheckIfFull())
+            {
+                InventorySystem.Instance.AddToInventory(ItemName);
+                Destroy(gameObject); // Example action: destroy the object after interaction
+            }
+            else
+            {
+                Debug.Log("Inventory is full, cannot pick up item.");
+            }
         }
     }
-
-
-
-
-
-
-
-
 
     private void OnTriggerEnter(Collider other)
     {
