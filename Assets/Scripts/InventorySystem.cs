@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.AI.Navigation;
 using UnityEngine;
 
 public class InventorySystem : MonoBehaviour
@@ -24,26 +25,25 @@ public class InventorySystem : MonoBehaviour
 
 
     private void Awake()
+{
+    if (Instance != null && Instance != this)
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-        }
-        else
-        {
-            Instance = this;
-        }
+        Destroy(gameObject);
+        return;
     }
+
+    Instance = this;
+}
 
 
     void Start()
     {
         isOpen = false;
 
-        PopulayteSLotList();
+        PopulateSlotList();
     }
 
-    private void PopulayteSLotList()
+    private void PopulateSlotList()
     {
         slotList.Clear();
         foreach (Transform child in inventoryScreenUI.transform)
@@ -71,7 +71,11 @@ public class InventorySystem : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.I) && isOpen)
         {
             inventoryScreenUI.SetActive(false);
-            Cursor.lockState = CursorLockMode.Locked;
+
+            if(!CraftingSystem.Instance.isOpen)
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+            }
             isOpen = false;
         }
     }
@@ -121,5 +125,40 @@ public class InventorySystem : MonoBehaviour
                 return false;
             }
             
+    }
+
+    public void RemoveItem(string nameToRemove, int amountToRemove)
+    {
+        int counter = amountToRemove;
+        for (var i = slotList.Count - 1; i >= 0; i--)
+        {
+            if (slotList[i].transform.childCount > 0)
+            {
+                if (slotList[i].transform.GetChild(0).name == nameToRemove + "(Clone)" && counter != 0)
+                {
+                    Destroy(slotList[i].transform.GetChild(0).gameObject);
+                    counter -= 1;
+                }
+            }
+        }
+    }
+
+    public void RecalculateList()
+    {
+        itemList.Clear();
+        foreach(GameObject slot in slotList)
+        {
+            if (slot.transform.childCount > 0)
+            {
+                string name = slot.transform.GetChild(0).name;
+
+                string str1 = name;
+                string str2 = "(Clone)";
+
+                string result = name.Replace(str2, "");
+
+                itemList.Add(slot.transform.GetChild(0).name.Replace("(Clone)", ""));
+            }
+        }
     }
 }
