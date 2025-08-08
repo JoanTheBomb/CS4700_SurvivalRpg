@@ -78,17 +78,17 @@ public class CraftingSystem : MonoBehaviour
             
         //refresh list
         StartCoroutine(calculate());  
-        RefreshNeededItems();
 
     }
 
     public IEnumerator calculate()
     {
-        yield return new WaitForSeconds(1f);
+        yield return 0;
         InventorySystem.Instance.RecalculateList();
+        RefreshNeededItems();
     }
 
-    private void RefreshNeededItems()
+    public void RefreshNeededItems()
     {
         if (AxeReq1 == null || AxeReq2 == null)
         {
@@ -127,7 +127,6 @@ public class CraftingSystem : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        RefreshNeededItems();
 
          if (Input.GetKeyDown(KeyCode.C) && !isOpen)
         {

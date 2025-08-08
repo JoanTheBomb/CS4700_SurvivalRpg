@@ -1,8 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Microsoft.Unity.VisualStudio.Editor;
+using TMPro;
 using Unity.AI.Navigation;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class InventorySystem : MonoBehaviour
 {
@@ -24,16 +28,23 @@ public class InventorySystem : MonoBehaviour
     //public bool isFull;
 
 
-    private void Awake()
-{
-    if (Instance != null && Instance != this)
-    {
-        Destroy(gameObject);
-        return;
-    }
+    // Pickup Popup
+    public GameObject pickupAlert;
+    public TMP_Text pickupName;
+    public UnityEngine.UI.Image pickupImage;
 
-    Instance = this;
-}
+
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+    }
 
 
     void Start()
@@ -83,15 +94,39 @@ public class InventorySystem : MonoBehaviour
     public void AddToInventory(string itemName)
     {
 
-        Debug.Log("Inventory is full");
-            
+
         whatSlotToEquip = FindNextEmptySlot();
+
         itemToAdd = Instantiate(Resources.Load<GameObject>(itemName), whatSlotToEquip.transform.position, whatSlotToEquip.transform.rotation);
         itemToAdd.transform.SetParent(whatSlotToEquip.transform);
 
         itemList.Add(itemName);
+        TriggerPickupPopUp(itemName, itemToAdd.GetComponent<UnityEngine.UI.Image>().sprite);
+        
+
+
+
+        RecalculateList();
+        CraftingSystem.Instance.RefreshNeededItems();
         
     }
+
+
+    void TriggerPickupPopUp(string itemName, Sprite itemSprite)
+    {
+
+        pickupAlert.SetActive(true);
+        
+        pickupName.text = itemName;
+        pickupImage.sprite = itemSprite;
+
+
+
+
+
+    }
+
+
 
     private GameObject FindNextEmptySlot()
     {
@@ -141,6 +176,8 @@ public class InventorySystem : MonoBehaviour
                 }
             }
         }
+        RecalculateList();
+        CraftingSystem.Instance.RefreshNeededItems();
     }
 
     public void RecalculateList()

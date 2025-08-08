@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
- 
+using UnityEngine.UI;
+using Microsoft.Unity.VisualStudio.Editor;
+
 public class SelectionManager : MonoBehaviour
 {
 
@@ -15,6 +17,13 @@ public class SelectionManager : MonoBehaviour
     public GameObject selectedObject;
     public GameObject interaction_Info_UI;
     TMP_Text interaction_text;
+
+
+    public UnityEngine.UI.Image centerDotImage;
+    public UnityEngine.UI.Image handIconImage;
+
+
+
  
     private void Start()
     {
@@ -53,15 +62,37 @@ public class SelectionManager : MonoBehaviour
             {
 
                 onTarget = true;
-                selectedObject = interactable.gameObject;  
+                selectedObject = interactable.gameObject;
 
                 interaction_text.text = interactable.GetItemName();
                 interaction_Info_UI.SetActive(true);
+
+
+                if (interactable.CompareTag("pickable"))
+                {
+
+                    centerDotImage.gameObject.SetActive(false);
+                    handIconImage.gameObject.SetActive(true);
+
+
+                }
+                else
+                {
+                    centerDotImage.gameObject.SetActive(true);
+                    handIconImage.gameObject.SetActive(false);
+                }
+
+
+
+
+
             }
             else // if there is a hit, but no Interactable Script
             {
                 onTarget = false;
                 interaction_Info_UI.SetActive(false);
+                centerDotImage.gameObject.SetActive(true);
+                handIconImage.gameObject.SetActive(false);
             }
 
         }
@@ -69,6 +100,8 @@ public class SelectionManager : MonoBehaviour
         {
             onTarget = false;
             interaction_Info_UI.SetActive(false);
+            centerDotImage.gameObject.SetActive(true);
+            handIconImage.gameObject.SetActive(false);
         }
     }
 }
